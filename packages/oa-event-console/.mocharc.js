@@ -1,8 +1,9 @@
 'use strict';
 
 module.exports = {
-  require: ['coffeescript/register', 'test/mocha_helpers.coffee', 'chai'],
+  require: ['tsx/cjs', 'test/mocha_helpers.ts', 'chai'],
   reporter: ['spec'],
   ui: ['bdd'],
   exit: true,
+  timeout: 60000,
 };

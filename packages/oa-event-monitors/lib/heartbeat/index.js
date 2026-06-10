@@ -103,7 +103,7 @@ var SampleAgent = (exports.Agent = Class({
           logger.debug('LINE[' + position + '] = ' + line);
 
           // is this the last line?
-          if (position == record_lines.length) {
+          if (position == record_lines.length - 1) {
             // check and strip the trailing ]
             if (line.charAt(line.length - 1) == ']') line = line.slice(0, line.length - 1);
           }

@@ -8,6 +8,7 @@ var logging = require('oa-logging')('oa:event:server:triggers');
 var logger = logging.logger;
 var debug = logging.debug;
 
+var async = require('async');
 var path = require('path');
 var inspect = require('util').inspect;
 var Joose = require('joose');

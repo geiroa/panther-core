@@ -50,13 +50,13 @@ var FileWatcher = (exports.FileWatcher = Class({
         var stream = fs.createReadStream(self.getFilePath(), { start: prev.size, end: curr.size });
         stream.addListener('data', function (lines) {
           var split_lines = lines.toString('utf-8').split('\n');
-          for (var line in split_lines) {
+          for (var i = 0; i < split_lines.length; i++) {
             /*
              * discard any empty lines by ensuring that only lines
              * with at least one character are emitted
              */
-            if (split_lines[line].length > 0) {
-              self.rawline(split_lines[line]);
+            if (split_lines[i].length > 0) {
+              self.rawline(split_lines[i]);
             }
           }
           /*

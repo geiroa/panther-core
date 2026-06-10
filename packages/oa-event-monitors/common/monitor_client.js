@@ -102,7 +102,7 @@ var MonitorClient = (exports.MonitorClient = Class('MonitorClient', {
         logger.warn('socket reconnecting ' + inspect(arguments));
         if (connection_count >= self.getRetryCount()) {
           logger.error('Connection failed to reconnect.');
-          logger.info('Buffer size [' + sock.sendBuffer.length() + ']');
+          logger.info('Buffer size [' + sock.sendBuffer.length + ']');
           logger.debug('BUFFER: ' + inspect(sock.sendBuffer, true, 5));
         }
       });
@@ -218,7 +218,7 @@ var MonitorClient = (exports.MonitorClient = Class('MonitorClient', {
       }
 
       if (!this.cleanupAlertFields(ev)) {
-        var err = new new Errors.ValidationError('Cleanup event failed')();
+        var err = new Errors.ValidationError('Cleanup event failed');
         err.ev = ev;
         if (cb) cb(err, ev);
         if (qcb) qcb(err, ev);
@@ -297,7 +297,8 @@ var MonitorClient = (exports.MonitorClient = Class('MonitorClient', {
         if (!_.isUndefined(ev[name]) && !_.isDate(ev[name])) {
           logger.warn('Field not a date [' + name + '] [' + ev[name] + '] converting to date...');
           ev[name] = new Date(ev[name]);
-          if (!_.isDate(ev[name])) {
+          // _.isDate() is true for Invalid Date too — also guard on a finite time.
+          if (!_.isDate(ev[name]) || isNaN(ev[name].getTime())) {
             logger.error('Field still not a Date [' + name + '] [' + ev[name] + ']');
             ret = false;
           }

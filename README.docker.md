@@ -19,14 +19,14 @@ This minimises the steps required to get up and running.
 
 ### Prerequisites
 
-[Docker](https://docker.com) version >= 19.03
+[Docker Engine](https://docs.docker.com/engine/install/) version >= 23.0 (BuildKit is the default builder; required for the cache-mount and heredoc syntax in the Dockerfiles)
 
-[docker-compose](https://docs.docker.com/compose/) version: >= 1.26
+[Docker Compose v2](https://docs.docker.com/compose/) (the `docker compose` plugin)
 
 ### Running the build
 
 ```bash
-docker-compose -f build/docker-compose.yml build
+docker compose -f build/docker-compose.yml build
 ```
 
 ### Starting Panther
@@ -44,7 +44,7 @@ event-monitors-http latest        7be9a8654d61   2 days ago      129MB
 They can be started with:
 
 ```bash
-docker-compose -f docker-compose-development.yml up
+docker compose -f docker-compose-development.yml up
 ```
 
 # Configuration

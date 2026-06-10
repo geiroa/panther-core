@@ -21,16 +21,17 @@ To build from a source code checkout.
 
 ## Prerequisites
 
-Panther uses [MongoDB](https://mongodb.com) for its underyling storage. The default Panther configuration expects that to be accessible via `localhost:27017`.
+- [Node.js](https://nodejs.org) 24 (the packages declare `"engines": { "node": "^24.0.0" }`)
+- [MongoDB](https://mongodb.com) 7 for the underlying storage. The default Panther configuration expects it to be accessible via `localhost:27017`.
 
 ## Install build dependencies
 
-The build system uses [Lerna](https://github.com/lerna/lerna) for co-ordinating the build and [Yarn](https://github.com/yarnpkg/yarn) for resolving package dependencies.
+The build system uses [Lerna](https://github.com/lerna/lerna) for co-ordinating the build and `npm` workspaces for resolving package dependencies.
 
-If these are not already installed you'll need to:
+If lerna is not already installed globally you'll need to:
 
 ```bash
-npm i -g lerna@7 yarn@1.22
+npm i -g lerna@9
 ```
 
 ## Running the build
@@ -38,7 +39,7 @@ npm i -g lerna@7 yarn@1.22
 Install the `npm` dependencies
 
 ```bash
-NODE_ENV=development yarn install
+NODE_ENV=development npm install
 ```
 
 Download external dependencies (fonts, JS), this only needed the first time
@@ -60,10 +61,10 @@ If you don't have MongoDB installed, use the provided `docker-compose.yml` file 
 - Start the database (Optional)
 
 If you don't already have MongoDB running you can use the `docker-compose.yml` to bring it up.
-**Note** you'll therefore need `docker` and `docker-compose` installed
+**Note** you'll therefore need `docker` and Docker Compose v2 (`docker compose`) installed
 
 ```bash
-docker-compose up mongodb
+docker compose up mongodb
 ```
 
 - Initialise MongoDB
@@ -77,7 +78,7 @@ lerna run setup
 - Start all Panther components
 
   ```bash
-  yarn run start/all
+  npm run start/all
   ```
 
 Panther should now be accessible via [localhost:3001](http://localhost:3001)
@@ -168,4 +169,3 @@ With an API key send an event using curl:
 ```bash
 curl -X POST -H 'X-Api-Token: <YOUR-API_KEY>' -H 'Content-Type: application/json' -d '{"event":{"node":"myhostname","tag":"event-tag","summary":"Hello from http","severity":1}}' 'http://localhost:5001/api/event/create'
 ```
-

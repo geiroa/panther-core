@@ -43,7 +43,7 @@ html(lang="en")
     block script
 
     //- # refresh on change outside of production
-    - if( node_env === 'development' && !no_refresh_env ) refresh = js('js/refresh.js');
+    - if( node_env === 'development' && !no_refresh_env ) refresh = js('refresh');
     != refresh
 
     //- # Pages can add a footer here

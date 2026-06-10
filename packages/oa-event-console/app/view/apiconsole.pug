@@ -7,8 +7,7 @@
 extends _template
 
 block script
-  != js('bower/clipboard.js')
-  != js('js/apiconsole')
+  != js('apiconsole')
   script(type="text/javascript" charset="utf-8").
     var global_api_tokens = !{JSON.stringify(api.tokens)};
     var global_api_url = !{JSON.stringify(api.url)};

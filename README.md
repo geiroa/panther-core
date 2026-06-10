@@ -1,6 +1,6 @@
 ![Panther Logo](/packages/oa-event-console/public/panther_logo_border.png)
 
-Copyright (C) 2023, Open Answers Ltd http://www.openanswers.co.uk/
+Copyright (C) 2023 - 2026, Open Answers Ltd http://www.openanswers.co.uk/
 All rights reserved.
 # Description
 
@@ -58,8 +58,8 @@ Optionally you can build the code yourself by following the instructions for:
 
 You will need the following minimum software versions
 
-- [Docker](https://docs.docker.com/engine/install/) 19.03
-- [docker-compose](https://docs.docker.com/compose/install/) 1.26
+- [Docker Engine](https://docs.docker.com/engine/install/) 23.0 or later (BuildKit is the default builder; the Dockerfiles use cache mounts and heredoc `RUN` syntax)
+- [Docker Compose v2](https://docs.docker.com/compose/install/) (the `docker compose` plugin)
 
 ### Disk space
 
@@ -77,10 +77,9 @@ To change the initial username/password credentials modify the following environ
  - `ADMIN_EMAIL=you@example.com`
 
 ```
-version: '3'
 services:
   mongodb:
-    image: mongo:3.6.23
+    image: mongo:7.0.28
     container_name: mongo
     hostname: mongodb
     restart: unless-stopped
@@ -90,7 +89,7 @@ services:
       - '27017'
 
   event-console:
-    image: openanswers/panther-console:4
+    image: openanswers/panther-console:5.0.4
     container_name: event-console
     hostname: console
     restart: unless-stopped
@@ -110,7 +109,7 @@ services:
       - rules-vol:/app/rules:rw
 
   event-server:
-    image: openanswers/panther-server:4
+    image: openanswers/panther-server:5.0.4
     container_name: event-server
     hostname: server
     restart: unless-stopped
@@ -124,7 +123,7 @@ services:
       - rules-vol:/app/rules:ro
 
   event-monitors-http:
-    image: openanswers/panther-monitors:4
+    image: openanswers/panther-monitors:5.0.4
     container_name: event-monitors-http
     hostname: event-monitors-http
     restart: unless-stopped
@@ -138,7 +137,7 @@ services:
       - rules-vol:/app/rules:ro
 
   event-monitors-syslogd:
-    image: openanswers/panther-monitors:4
+    image: openanswers/panther-monitors:5.0.4
     container_name: event-monitors-syslogd
     hostname: event-monitors-syslogd
     restart: unless-stopped
@@ -162,7 +161,7 @@ volumes:
 With the above file saved locally as `docker-compose.yml`, Panther is started with
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 This will expose:
  - The main web interface on port `3001`
@@ -188,7 +187,7 @@ Panther should now be running locally and can be accessed through the web interf
   From the command line with:
 
   ```
-  docker-compose exec event-console node bin/setup_user.js -u <USERNAME> -p <PASSWORD> -e <EMAIL-ADDRESS>
+  docker compose exec event-console node bin/setup_user.js -u <USERNAME> -p <PASSWORD> -e <EMAIL-ADDRESS>
   ```
 
 
@@ -287,7 +286,7 @@ This project makes use of the following:
 - [MongoDB](https://mongodb.com)
 - [w2ui](http://w2ui.com)
 - [D3.js](https://d3js.org)
-- [coffeescript](https://coffeescript.org)
+- [TypeScript](https://www.typescriptlang.org)
 - [Bootstrap](https://getbootstrap.com)
 - [jQuery](https://jquery.com)
 - [jQueryUI](https://jqueryui.com)

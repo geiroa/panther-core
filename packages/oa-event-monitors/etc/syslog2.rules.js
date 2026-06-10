@@ -145,13 +145,12 @@ exports.rules = function (a, obj) {
 
     /* a.severity 1 indeterminate reserved for heartbeat */
 
-    case 5
-    /* notice  severityID 5
-     * The oa-event-relay can be configured with oa-event-relay.properties
-     * to send heartbeat messages. We configure this to be "OAER OA Event Relay".
-     * We need to be store these in mongo so we can monitor the relay.
-     */:
-      if (obj.message === 'OAER OA Event Relay') {
+    case 5:
+      /* notice  severityID 5
+       * The oa-event-relay can be configured with oa-event-relay.properties
+       * to send heartbeat messages. We configure this to be "OAER OA Event Relay".
+       * We need to be store these in mongo so we can monitor the relay.
+       */ if (obj.message === 'OAER OA Event Relay') {
         a.severity = 1;
       } else {
         a.severity = -1; /* drop */

@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  require: ['coffeescript/register', 'chai'],
+  require: ['tsx/cjs', 'chai'],
   reporter: ['spec'],
   ui: ['bdd'],
   exit: true,

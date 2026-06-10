@@ -13,6 +13,17 @@
       "env": { "NODE_ENV": "production", "DEBUG": "oa:*" },
       "cwd": "${workspaceFolder}/packages/oa-event-console",
       "program": "${workspaceFolder}/packages/oa-event-console/dist/app/start.js"
+    },
+
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Server",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"],
+      "env": { "NODE_ENV": "production", "DEBUG": "oa:event:server:*" },
+      "cwd": "${workspaceFolder}/packages/oa-event-server",
+      "program": "${workspaceFolder}/packages/oa-event-server/lib/server.js"
     }
   ]
 }

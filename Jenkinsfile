@@ -92,14 +92,14 @@ pipeline {
         stage('panther-builder'){
           steps {
             script {
-              docker.build("panther-builder:hydrogen-alpine3.18", " -f Dockerfiles/Dockerfile-builder .")
+              docker.build("panther-builder:24.15.0-alpine3.23", " -f Dockerfiles/Dockerfile-builder .")
             }
           }
         }
         stage('panther-runtime'){
           steps {
             script {
-              docker.build("panther-runtime:hydrogen-alpine3.18", " -f Dockerfiles/Dockerfile-runtime .")
+              docker.build("panther-runtime:24.15.0-alpine3.23", " -f Dockerfiles/Dockerfile-runtime .")
             }
           }
         }

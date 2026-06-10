@@ -714,7 +714,7 @@ var ClientManager = (exports.ClientManager = Class('ClientManager', {
         self.socket.disconnect(msg);
         return cb(msg);
       }
-      return this.socket.request.session.user;
+      return this.socket.request.session.user.username;
     },
 
     // Logging helpers witha socket id built in

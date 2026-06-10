@@ -10,7 +10,7 @@ var logger = logging.logger;
 var debug = logging.debug;
 
 var net = require('net');
-var libxmljs = require('libxmljs');
+var libxmljs = require('libxmljs2');
 
 var Class = require('joose').Class;
 
@@ -27,7 +27,7 @@ var XmlListener = (exports.XmlListener = Class({
       /* base method - must be over ridden */
       debug('parse record', record);
       logger.error('base class parse');
-      self.getEventCB()({ msg: 'MISSING PARSE function in overridden base class' });
+      this.getEventCB()({ msg: 'MISSING PARSE function in overridden base class' });
     },
     start: function (started_cb) {
       var self = this;

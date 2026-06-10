@@ -68,7 +68,7 @@ var LogTailer = (exports.LogTailer = Class({
     parse: function (line) {
       /* base method - must be over ridden */
       logger.error('base class parse');
-      self.getTokenCB()({ msg: 'MISSING PARSE function in overridden base class' });
+      this.getTokenCB()({ msg: 'MISSING PARSE function in overridden base class' });
     },
     start: function (started_cb) {
       var self = this;
@@ -95,13 +95,13 @@ var LogTailer = (exports.LogTailer = Class({
         /*
          * start the watcher
          */
-        var intitial_offset = 0;
+        var initial_offset = 0;
         if (self.getFileTracker() != undefined) {
           initial_offset = self.getFileTracker().where_to_start_from(initial_stat);
         }
         watched_file.watch(initial_offset);
       } else {
-        logger.warning('logfile: [' + self.getLogfilePath() + '] does not exist');
+        logger.warn('logfile: [' + self.getLogfilePath() + '] does not exist');
       }
     },
   },

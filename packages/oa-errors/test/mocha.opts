@@ -1,5 +1,0 @@
---require coffeescript/register
---require test/mocha_helpers.coffee
---require chai
---reporter spec
---ui bdd

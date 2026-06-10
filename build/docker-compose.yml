@@ -1,15 +1,14 @@
-version: '3.1'
 services:
   builder:
     build:
       context: ..
       dockerfile: Dockerfiles/Dockerfile-builder
-    image: 'panther-builder:hydrogen-alpine3.18'
+    image: 'panther-builder:24.15.0-alpine3.23'
   runtime:
     build:
       context: ..
       dockerfile: Dockerfiles/Dockerfile-runtime
-    image: 'panther-runtime:hydrogen-alpine3.18'
+    image: 'panther-runtime:24.15.0-alpine3.23'
 
   server:
     depends_on:

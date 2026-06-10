@@ -36,7 +36,7 @@ var RawLog = function (options, callback) {
 
 RawLog.prototype.open = function (filename, callback) {
   this.logstream = fs
-    .createWriteStream(filename, { flags: 'a', encoding: null, mode: 0644 })
+    .createWriteStream(filename, { flags: 'a', encoding: null, mode: 0o644 })
     .addListener('open', function (fd) {
       logger.info('opened file: ' + filename);
       callback(null);

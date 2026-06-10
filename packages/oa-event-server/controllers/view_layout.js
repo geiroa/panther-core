@@ -9,7 +9,7 @@ var logging = require('oa-logging')('oa:event:server:controllers:view_layout');
 var logger = logging.logger;
 var debug = logging.debug;
 
-ViewLayouts = require(__dirname + '/../models/layout');
+const ViewLayouts = require(__dirname + '/../models/layout');
 var util = require('util');
 var inspect = util.inspect;
 
@@ -89,7 +89,7 @@ module.exports = {
         AlertDefinitions.find({}, { column: 1, width: 1 }, function (err, allcols) {
           if (err || allcols.length < 1) {
             logger.error('Failed to find all column definitions: ' + err);
-            res.send(404);
+            res.sendStatus(404);
           } else {
             var r = {};
             var cols2 = allcols.map(function (col) {
@@ -168,7 +168,7 @@ module.exports = {
              * add those columns back into the view but mark them as hidden
              */
 
-            for (hidden_column in all_columns) {
+            for (const hidden_column in all_columns) {
               var obj = {
                 hidden: 'true',
                 field: hidden_column,
@@ -201,7 +201,7 @@ module.exports = {
           } else {
             logger.info('No view found called: ' + req.params.id);
             res.contentType('application/json');
-            res.send(404);
+            res.sendStatus(404);
           }
         });
       }

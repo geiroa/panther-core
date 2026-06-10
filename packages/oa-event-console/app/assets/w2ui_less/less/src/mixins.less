@@ -57,12 +57,11 @@
 }
 
 .linear-gradient (@params...) {
-    @gradient: ~`'@{arguments}'.replace(/^\[|\]$/g, '').replace(/, /g, ',')`;
-    background-image : -webkit-linear-gradient(@gradient);
-    background-image :       -moz-linear-gradient(@gradient);
-    background-image :        -ms-linear-gradient(@gradient);
-    background-image :         -o-linear-gradient(@gradient);
-    background-image :            linear-gradient(@gradient);
+    background-image : -webkit-linear-gradient(@arguments);
+    background-image :       -moz-linear-gradient(@arguments);
+    background-image :        -ms-linear-gradient(@arguments);
+    background-image :         -o-linear-gradient(@arguments);
+    background-image :            linear-gradient(@arguments);
 }
 
 .linear-gradient-vertical (@color1, @color2) when (@color1 = @color2) {

@@ -9,7 +9,7 @@ var logging = require('oa-logging')('oa:event:server:controllers:filter');
 var logger = logging.logger;
 var debug = logging.debug;
 
-Filters = require(__dirname + '/../models/filter');
+const Filters = require(__dirname + '/../models/filter');
 var inspect = require('util').inspect;
 
 module.exports = {

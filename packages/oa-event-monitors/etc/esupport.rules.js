@@ -166,46 +166,46 @@ exports.rules = function (a, obj) {
       }
     }
   } else if (($a = $subject.match(/^P(\d) (\S+) ([SG]) ((\d+)|(\d+)\/(\d+))(|\((\d+)\)) (.*)/))) {
-  /*
-   * the following regex should match:
-   * P4 oaxgs02 G 15998 messages file
-   *   [1] = 4
-   *   [2] = oaxgs02
-   *   [3] = G
-   *   [4] = 15998
-   *   [5] = 15998
-   *   [6] = undefined
-   *   [7] = undefined
-   *   [8] = ''
-   *   [9] = undefined
-   *  [10] = messages file
-   *
-   * P4 oaxgs36 G 15998(15) messages file
-   *   [1] = 4
-   *   [2] = oaxgs36
-   *   [3] = G
-   *   [4] = 15998
-   *   [5] = 15998
-   *   [6] = undefined
-   *   [7] = undefined
-   *   [8] = (15)
-   *   [9] = 15
-   *  [10] = messages file
-   *
-   * P4 oabkp01 S 16038/16042(16) backup message
-   *   [1] = 4
-   *   [2] = oabkp01
-   *   [3] = S
-   *   [4] = 16038/16042
-   *   [5] = undefined
-   *   [6] = 16038
-   *   [7] = 16042
-   *   [8] = (16)
-   *   [9] = 16
-   *  [10] = backup message
-   *
-   * the only way to know which one is by checking for undefined's
-   */
+    /*
+     * the following regex should match:
+     * P4 oaxgs02 G 15998 messages file
+     *   [1] = 4
+     *   [2] = oaxgs02
+     *   [3] = G
+     *   [4] = 15998
+     *   [5] = 15998
+     *   [6] = undefined
+     *   [7] = undefined
+     *   [8] = ''
+     *   [9] = undefined
+     *  [10] = messages file
+     *
+     * P4 oaxgs36 G 15998(15) messages file
+     *   [1] = 4
+     *   [2] = oaxgs36
+     *   [3] = G
+     *   [4] = 15998
+     *   [5] = 15998
+     *   [6] = undefined
+     *   [7] = undefined
+     *   [8] = (15)
+     *   [9] = 15
+     *  [10] = messages file
+     *
+     * P4 oabkp01 S 16038/16042(16) backup message
+     *   [1] = 4
+     *   [2] = oabkp01
+     *   [3] = S
+     *   [4] = 16038/16042
+     *   [5] = undefined
+     *   [6] = 16038
+     *   [7] = 16042
+     *   [8] = (16)
+     *   [9] = 16
+     *  [10] = backup message
+     *
+     * the only way to know which one is by checking for undefined's
+     */
     a.severity = parseInt($a[1]);
     a.node = $a[2];
 
@@ -316,7 +316,7 @@ exports.rules = function (a, obj) {
       //process.exit(1);
     }
   } else if (($a = $subject.match(/([\w\-]+): (Domain processor unavailable)/))) {
-  /*
+    /*
   else if( $a = $subject.match( /^P(\d) ([\w\-]+) ([SG]) (\d+)\((\d+)\) (.*)/ ) )
   {
     a.severity = parseInt( $a[1] );
@@ -575,10 +575,10 @@ exports.rules = function (a, obj) {
       a.identifier = 'sitedown:' + a.node;
     }
   } else if (($a = $subject.match(/^\((\d+)\) racoon.log (.*)/))) {
-  /*
-   * e.g.
-   * (50001) racoon.log VPN error: 2011-09-23 14:40:44: ERROR: Cannot record event: event queue overflow
-   */
+    /*
+     * e.g.
+     * (50001) racoon.log VPN error: 2011-09-23 14:40:44: ERROR: Cannot record event: event queue overflow
+     */
     a.alert_group = 'VPN';
     if ($a[2].match(/VPN error: .*/)) {
       a.severity = 4;

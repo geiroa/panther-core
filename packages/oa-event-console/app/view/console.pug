@@ -13,10 +13,10 @@ block nav
 
 block css
   link(rel='stylesheet', href='/console/severities.css', type='text/css' )
-  != css('css/w2ui.css')
+  != css('w2ui_css')
   //- != css('css/w2ui-override')
-  != css('css/console')
-  != css('css/contextmenu')
+  != css('console_css')
+  != css('contextmenu_css')
 
 
 block content
@@ -53,7 +53,7 @@ block script
     var groups = !{JSON.stringify(config.rules.set.groups)};
 
 
-  != js('js/w2ui.js')
-  != js('bower/clipboard.js')
-  != js('js/charts')
-  != js('js/console')
+  script(src='/assets/vendor/d3.js' defer)
+  script(src='/assets/vendor/w2ui.js' defer)
+  != js('charts')
+  != js('console')

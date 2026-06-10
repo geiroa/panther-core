@@ -4,6 +4,6 @@ node_modules/
 npm-debug.log
 docs/public/fonts/
 docs/public/images/
-test/func/fixture/event_rules_spec.yml*
-test/func/fixture/re*
+test/int/fixture/event_rules_spec.yml*
+test/int/fixture/re*
 *.swp

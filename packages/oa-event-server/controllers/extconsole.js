@@ -9,7 +9,7 @@ var logging = require('oa-logging')('oa:event:server:controllers:extconsole');
 var logger = logging.logger;
 var debug = logging.debug;
 
-async = require('async');
+const async = require('async');
 var inspect = require('util').inspect;
 
 module.exports = {

@@ -23,7 +23,6 @@ var Errors = require('oa-errors');
 var yaml = require('js-yaml');
 var rules = require('oa-event-rules');
 var EventRules = rules.EventRules;
-var Event = rules.Event;
 
 var nconf = require('nconf');
 
@@ -34,6 +33,27 @@ var DEFAULT_MONITOR_HEARTBEAT_PERIOD_SECONDS = 60;
 var MINIMUM_MONITOR_HEARTBEAT_PERIOD_SECONDS = 1;
 var DEFAULT_LOG_LEVEL = 'info';
 var DEFAULT_SERVER = 'http://localhost:4003';
+
+// Decode and feed an incoming HTTP message through the agent's parser
+// then the configured event callback. Resolves with 'queued' on success.
+function incoming_message(agent, message) {
+  return new Promise(function (resolve, reject) {
+    if (!message) reject(new Errors.HttpError400('message missing'));
+
+    var str_utf8 = Buffer.from(message, 'base64').toString('utf8', 0);
+
+    agent.parse(str_utf8, function (err, message) {
+      if (err) reject(err);
+
+      agent.getEventCB()(message, null, null, function (err, res) {
+        if (err) reject(err);
+
+        logger.info('successful http request', message.summary);
+        resolve('queued');
+      });
+    });
+  });
+}
 
 function OaMon() {
   events.EventEmitter.call(this);
@@ -275,27 +295,8 @@ OaMon.prototype.httpListen = function (callback) {
   var app = express();
   app.use(bodyParser.json());
 
-  var incoming_message = function (message) {
-    return new Promise(function (resolve, reject) {
-      if (!message) reject(new Errors.HttpError400('message missing'));
-
-      var str_utf8 = new Buffer(message, 'base64').toString('utf8', 0);
-
-      self.agent.parse(str_utf8, function (err, message) {
-        if (err) reject(err);
-
-        self.agent.getEventCB()(message, null, null, function (err, res) {
-          if (err) reject(err);
-
-          logger.info('successful http request', message.summary);
-          resolve('queued');
-        });
-      });
-    });
-  };
-
   app.post('/api/event-from/syslog', function (req, res) {
-    incoming_message(req.body.message)
+    incoming_message(self.agent, req.body.message)
       .then(function (result) {
         res.json({ message: result });
       })
@@ -410,11 +411,6 @@ OaMon.prototype.readyAlerts = function (callback) {
   // Register an event handler for when a new alert arrives, call the rules()
   // method in the rules file and pass it the raw event data
   this.on('newalert', function (obj, cb, qcb, lcb) {
-    /*
-     * create an empty object to populate with the events fields
-     */
-    var new_event = new Event();
-
     var e = {
       agent: nconf.get('agent:type'),
     };
@@ -424,22 +420,25 @@ OaMon.prototype.readyAlerts = function (callback) {
     self.agent_rules.rules(e, obj);
     logger.debug('Event fields', e, '');
 
+    // Call every callback the caller supplied with a discard result,
+    // so transports that pass cb/qcb (socket) or lcb (http) all see the outcome.
+    var notify_discard = function (result) {
+      if (cb) cb(null, result);
+      if (qcb) qcb(null, result);
+      if (lcb) lcb(null, result);
+    };
+
     // check any conditions which will discard the event
     if (e.severity < 0) {
-      logger.info(
-        'Discarding alert from rules file with identifier [' + e._pre_identifier || e.identifier || 'unknown'
-      );
-      // Store this somewhere, somehow.
-      // Emit via ZMQ to the webserver for inspection?
-      if (lcb) lcb(null, { status: 'discarded', message: 'Event discarded' });
+      var discard_id = e._pre_identifier || e.identifier || 'unknown';
+      logger.info('Discarding alert from rules file with identifier [' + discard_id + ']');
+      notify_discard({ status: 'discarded', message: 'Event discarded' });
       return;
     }
 
-    if (typeof e.identifier === 'null' || typeof e.identifier === 'undefined') {
+    if (e.identifier === null || e.identifier === undefined) {
       logger.error("Dropping Event: identifier wasn't set in event", e, '');
-      // Store this somewhere, somehow.
-      // Emit via socketio to the webserver for inspection?
-      if (lcb) lcb(null, { status: 'discarded', message: 'Event missing indentifier' });
+      notify_discard({ status: 'discarded', message: 'Event missing identifier' });
       return;
     }
 
@@ -461,10 +460,9 @@ OaMon.prototype.readyAlerts = function (callback) {
      */
     if (self.rawlog) {
       debug('Storing raw event information for identifier', e.identifier);
-      var rl = { timestamp: tnow, identifier: e.identifier, rawevent: obj };
+      var rl = { timestamp: new Date(), identifier: e.identifier, rawevent: obj };
       self.rawlog.log(inspect(rl));
     }
-    //else debug( "RawLog capture disabled" );
 
     if (nconf.get('oneshot')) self.monitor.sendOneAlert(e, cb, qcb);
     else self.monitor.sendAlert(e, cb, qcb);

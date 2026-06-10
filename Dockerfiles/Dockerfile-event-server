@@ -1,108 +1,31 @@
-FROM panther-builder:hydrogen-alpine3.18 as builder
-ARG BUILDTIME_ENV=production
+FROM panther-builder:24.15.0-alpine3.23 AS builder
 
-#RUN npm install -g yarn
+FROM panther-runtime:24.15.0-alpine3.23 AS base
 
-WORKDIR $BUILD_DIR
-
-COPY package.json $BUILD_DIR/package.json
-COPY yarn.lock $BUILD_DIR/yarn.lock
-
-COPY packages/oa-errors/package.json $BUILD_DIR/packages/oa-errors/package.json
-COPY packages/oa-helpers/package.json $BUILD_DIR/packages/oa-helpers/package.json
-COPY packages/oa-logging/package.json $BUILD_DIR/packages/oa-logging/package.json
-COPY packages/oa-tinycache/package.json $BUILD_DIR/packages/oa-tinycache/package.json
-
-COPY packages/oa-event-server/package.json $BUILD_DIR/packages/oa-event-server/package.json
-COPY packages/oa-event-rules/package.json $BUILD_DIR/packages/oa-event-rules/package.json
-
-COPY lerna.json $BUILD_DIR/lerna.json
-
-ENV CXXFLAGS="-march=nocona -mno-aes -mno-f16c -mno-avx -mno-avx2 -mno-bmi2"
-
-RUN ["/bin/bash", "-c", "yarn install"]
-
-COPY packages/oa-errors $BUILD_DIR/packages/oa-errors
-COPY packages/oa-helpers $BUILD_DIR/packages/oa-helpers
-COPY packages/oa-logging $BUILD_DIR/packages/oa-logging
-COPY packages/oa-tinycache $BUILD_DIR/packages/oa-tinycache
-
-COPY packages/oa-event-server $BUILD_DIR/packages/oa-event-server
-COPY packages/oa-event-rules $BUILD_DIR/packages/oa-event-rules
-
-ENV NODE_ENV=$BUILDTIME_ENV
-RUN yarn run lerna run build
-
-# remove the devDeps
-RUN yarn install --production=true
-
-RUN find $BUILD_DIR/packages -type f -exec chmod ugo+r '{}' \; && \
-  find $BUILD_DIR/packages -type d -exec chmod ugo+rx '{}' \;
-
-FROM panther-runtime:hydrogen-alpine3.18
 LABEL component="panther/server"
 
-COPY --from=builder /build/node_modules /app/node_modules
-
-COPY --from=builder /build/packages/oa-errors/lib /app/packages/oa-errors/lib
-COPY --from=builder /build/packages/oa-errors/package.json /app/packages/oa-errors/package.json
-COPY --from=builder /build/packages/oa-errors/node_modules /app/packages/oa-errors/node_modules
-
-COPY --from=builder /build/packages/oa-helpers/lib /app/packages/oa-helpers/lib
-COPY --from=builder /build/packages/oa-helpers/package.json /app/packages/oa-helpers/package.json
-COPY --from=builder /build/packages/oa-helpers/node_modules /app/packages/oa-helpers/node_modules
-
-COPY --from=builder /build/packages/oa-logging/lib /app/packages/oa-logging/lib
-COPY --from=builder /build/packages/oa-logging/node_modules /app/packages/oa-logging/node_modules
-COPY --from=builder /build/packages/oa-logging/package.json /app/packages/oa-logging/package.json
-
-COPY --from=builder /build/packages/oa-tinycache/lib /app/packages/oa-tinycache/lib
-COPY --from=builder /build/packages/oa-tinycache/node_modules /app/packages/oa-tinycache/node_modules
-COPY --from=builder /build/packages/oa-tinycache/package.json /app/packages/oa-tinycache/package.json
-
-COPY --from=builder /build/packages/oa-event-rules/lib /app/packages/oa-event-rules/lib
-COPY --from=builder /build/packages/oa-event-rules/node_modules /app/packages/oa-event-rules/node_modules
-COPY --from=builder /build/packages/oa-event-rules/package.json /app/packages/oa-event-rules/package.json
-
 # Install application
-
-COPY --from=builder /build/packages/oa-event-server/bin /app/bin
-COPY --from=builder /build/packages/oa-event-server/lib /app/lib
-COPY --from=builder /build/packages/oa-event-server/etc/alertdef.js /app/etc/
-COPY --from=builder /build/packages/oa-event-server/etc/server.ini.dist /app/etc/server.ini
-COPY --from=builder /build/packages/oa-event-server/external_commands /app/external_commands
-COPY --from=builder /build/packages/oa-event-server/automations /app/automations
-COPY --from=builder /build/packages/oa-event-server/models /app/models
-COPY --from=builder /build/packages/oa-event-server/package.json /app/
+COPY --from=builder --chmod=0755 /build/packages/oa-event-server/bin ./bin
+COPY --from=builder /build/packages/oa-event-server/lib ./lib
+COPY --from=builder /build/packages/oa-event-server/etc/alertdef.js ./etc/
+COPY --from=builder /build/packages/oa-event-server/etc/server.ini.dist ./etc/server.ini
+COPY --from=builder /build/packages/oa-event-server/external_commands ./external_commands
+COPY --from=builder /build/packages/oa-event-server/automations ./automations
+COPY --from=builder /build/packages/oa-event-server/models ./models
+COPY --from=builder /build/packages/oa-event-server/package.json ./
+COPY --from=builder /build/packages/oa-event-server/node_modules/ ./node_modules/
 
 # Install migration files
-COPY --from=builder /build/packages/oa-event-server/migrate-mongo-config.js /app/migrate-mongo-config.js
-COPY --from=builder /build/packages/oa-event-server/migrations /app/migrations
-
-# copy over all the modules
-COPY --from=builder /build/packages/oa-event-server/node_modules/ /app/node_modules/
+COPY --from=builder /build/packages/oa-event-server/migrate-mongo-config.js ./migrate-mongo-config.js
+COPY --from=builder /build/packages/oa-event-server/migrations ./migrations
 
 #install an entrypoint
-COPY ./Dockerfiles/entrypoint-event-server.sh /docker-entrypoint.sh
-COPY ./Dockerfiles/wait-for-it.sh /wait-for-it.sh
-RUN apk --no-cache add bash && \
-  chmod ugo+rx /wait-for-it.sh /docker-entrypoint.sh
-
-WORKDIR /app
-
-ARG BUILD_PANTHER_VERSION=unknown
-ENV PANTHER_VERSION=$BUILD_PANTHER_VERSION
-
-ARG RUNTIME_ENV=production
-ENV NODE_ENV=$RUNTIME_ENV
-
-RUN chmod ugo+x /app/bin/* && \
-  find -L /app/bin -type f -exec chmod +x '{}' \;
+COPY --from=builder --chmod=0755 /build/packages/oa-event-server/docker/entrypoint.sh ./docker-entrypoint.sh
+COPY --from=builder --chmod=0755 /build/packages/oa-event-server/docker/wait-for-it.sh ./wait-for-it.sh
 
 EXPOSE 4002/tcp
-VOLUME /app/rules
-# cleanup
+
 USER app
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT ["./docker-entrypoint.sh"]
 

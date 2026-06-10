@@ -520,7 +520,7 @@ exports.rules = function (a, obj) {
       a.alert_group = 'Windows';
       ident2 += 'win:';
 
-      winlog = {};
+      const winlog = {};
       obj.lines.forEach(function (line) {
         var matches = undefined;
         if ((matches = line.match(/(^[A-Z][a-z\ ]+):[\.]+(\w+)/))) {

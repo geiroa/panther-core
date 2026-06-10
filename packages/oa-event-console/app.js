@@ -4,7 +4,6 @@
 // This file is subject to the terms and conditions defined in the Software License Agreement.
 //
 
-require('coffee-script').register();
-require('./app/index.coffee').start(function () {
+require('./dist/app/index').start(function () {
   //console.log("Started app")
 });

@@ -41,7 +41,9 @@ http:
   port: 3901
 
 smtp:
-  host: mta.openans.co.uk
+  # jsonTransport stubs nodemailer so tests never try to actually send mail
+  jsonTransport: true
+  host: mta.example.com
   port: 25
 
 session:
@@ -51,3 +53,6 @@ session:
 
 rules:
   path: "./test/fixture/rules"
+  agents:
+    - http
+    - syslogd

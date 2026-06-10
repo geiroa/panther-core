@@ -26,8 +26,7 @@
       "sourceMaps": true,
       "outFiles": ["${workspaceRoot}/dist/**/*.js"],
       "console": "integratedTerminal",
-      "runtimeExecutable": "${workspaceRoot}/utils/node.sh",
-      "preLaunchTask": "coffeecompile"
+      "runtimeExecutable": "${workspaceRoot}/utils/node.sh"
     },
     {
       "type": "node",

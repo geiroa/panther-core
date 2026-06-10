@@ -9,7 +9,7 @@ var logging = require('oa-logging')('oa:event:server:controllers:alert');
 var logger = logging.logger;
 var debug = logging.debug;
 
-Filters = require(__dirname + '/../models/filter');
+const Filters = require(__dirname + '/../models/filter');
 
 var util = require('util');
 var inspect = util.inspect;
@@ -137,7 +137,7 @@ module.exports = {
       finder.execFind(function (err, docs) {
         if (err) {
           logger.error('execFind : ' + err);
-          res.send(404);
+          res.sendStatus(404);
           throw new Error(err);
         }
 
@@ -222,7 +222,7 @@ module.exports = {
 
         if (!data || data.length == 0) {
           logger.debug('Could not find alert with id: ' + req.params.id);
-          res.send(404);
+          res.sendStatus(404);
           return;
         } else {
           debug('update updating 1', data);

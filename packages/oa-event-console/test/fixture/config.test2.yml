@@ -37,7 +37,7 @@ http:
   port: 3903
 
 smtp:
-  host: mta.openans.co.uk
+  host: mta.example.com
   port: 25
 
 session:

@@ -219,11 +219,6 @@ var AlertsLoader = (exports.AlertsLoader = Class('AlertsLoader', {
         return flags;
       });
 
-      alertSchema.virtual('_pre_identifier').set(function (v) {
-        // ensure not to conflict with virtual name
-        this.__pre_identifier = v;
-      });
-
       /*
        * instance methods
        */
@@ -260,14 +255,34 @@ var AlertsLoader = (exports.AlertsLoader = Class('AlertsLoader', {
         return { details: details, notes: notes, history: history, timestamps: timestamps };
       });
 
+      alertSchema.method('toShellEnv', function () {
+        var lert = this.toObject();
+        /*
+         * when running via ExternalCommands we have the ability to select the columns we
+         * are interested in, consequently some columns may not exist in the result set
+         * so we need to ensure they exist before munging anything
+         */
+        if (this.upsert_timestamps) {
+          lert.first_occurrence = this.upsert_timestamps[0];
+          lert.last_occurrence = this.upsert_timestamps[lert.upsert_timestamps.length - 1];
+
+          delete lert.upsert_timestamps;
+        }
+        lert.flags = this.flags;
+        lert.serial = this.serial;
+        if (!lert.severity) lert.severity = lert._severity;
+        if (lert.history) delete lert.history;
+
+        return lert;
+      });
+
       /*
        * Hooks
        */
 
       alertSchema.pre('save', function (next) {
         // upon saving the event store the timestamp in a seperate collection
-        // FIXME: maybe simplify the conditions to only use identifier?
-        var conditions = { identifier: this.identifier, pre_identifier: this.__pre_identifier };
+        var conditions = { identifier: this.identifier };
         var update_with = {
           $push: {
             current: {

@@ -13,5 +13,5 @@ module.exports = {
   },
 
   when: { periodic: 17 },
-  activated: false,
+  activated: true,
 };

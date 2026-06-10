@@ -8,8 +8,8 @@ extends _template
 
 block css
   link(rel='stylesheet', href='/console/severities.css', type='text/css' )
-  != css('css/w2ui.css')
-  != css('css/dashboard.css')
+  != css('w2ui_css')
+  != css('dashboard_css')
 
 block template
   script(id="template-activity-stream-entry" type="text/x-mustache-template")
@@ -93,10 +93,11 @@ block content
                 
 
 block script
-  != js('js/charts')
-  != js('js/dashboard')
-  != js('js/widget-activity-stream')
-  != js('js/widget-summary-stream')
-  != js('js/widget-inventory-stream')
-  != js('js/w2ui.js')
+  script(src='/assets/vendor/d3.js' defer)
+  != js('charts')
+  != js('dashboard')
+  script(src='/assets/vendor/w2ui.js' defer)
+  != js('widget_activity')
+  != js('widget_summary')
+  != js('widget_inventory')
 

@@ -8,9 +8,7 @@ extends _template
 
 
 block script
-  //-!= js('js/_rules-management.js')
-  != js('js/import-export.js')
-  != js('bower/FileSaver.js')
+  != js('import_export')
 
   script(src='/siofu/client.js')
 
@@ -20,7 +18,7 @@ block nav
   include ./_nav_generic
 
 block css
-  != css('css/rules-management.css')
+  != css('rules_mgmt_css')
 
 block content
   script var gitEnabled = #{gitEnabled};

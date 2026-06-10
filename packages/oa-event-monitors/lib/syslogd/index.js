@@ -71,7 +71,7 @@ exports.Agent = Class('AgentSyslogd', {
           carrier.carry(socket, function (line) {
             debug('TCP syslogd line raw msg', line);
             self.parse(line, function (err, parsed) {
-              if (err) return logger.error(message);
+              if (err) return logger.error(err);
               self.getEventCB()(parsed);
             });
           });
@@ -88,7 +88,7 @@ exports.Agent = Class('AgentSyslogd', {
 
         self.parse(rawMessage.toString('utf8', 0), function (err, parsed) {
           debug('SYSLOG PARSED', parsed);
-          if (err) return logger.error(message);
+          if (err) return logger.error(err);
           self.getEventCB()(parsed);
         });
       });

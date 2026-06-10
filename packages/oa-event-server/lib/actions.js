@@ -9,6 +9,7 @@ var logging = require('oa-logging')('oa:event:server:actions');
 var logger = logging.logger;
 var debug = logging.debug;
 
+var async = require('async');
 var inspect = require('util').inspect;
 var path = require('path');
 
@@ -183,7 +184,7 @@ var InternalDeleteAction = (exports.InternalDeleteAction = Class({
       if (typeof this.getCriteria() == 'function') criteria = this.getCriteria()(lert);
 
       Alerts.remove(criteria, function (err, results) {
-        if (err) logger.error('[' + this.getName() + '] ' + err);
+        if (err) logger.error('[' + self.getName() + '] ' + err);
         logger.info('[' + self.getName() + '] deleted ' + results + ' rows');
         cb(err);
       });
@@ -246,88 +247,30 @@ var ExternalAction = (exports.ExternalAction = Class({
     },
   },
   methods: {
-    /*
-     * lert = {}
-     * optional cb = function( err, result )
-     */
-    execute_for_object: function (lert, finished_cb) {
+    // Triggers iterate their result set and call execute() once per document
+    // (see triggers.js `TriggerAction.fire`). We spawn the configured
+    // external command once for that single lert, pass the alert fields as
+    // env vars, then dispatch to the on-handler matching the command's
+    // return code (or the 'default' handler).
+    execute: function (lert, trig_query, cb) {
       var self = this;
-      if (lert instanceof MongooseDocument) {
-      }
-    },
-    execute_for_array: function (lerts, finished_cb) {
-      if (this.getEach()) {
-        var self = this;
-        async.forEachSeries(
-          lerts,
-          function (lert, cb) {
-            self.execute_for_object(lert, cb);
-          },
-          function (err) {
-            finished_cb(err);
-          }
-        );
-      } else {
-        /*
-         * pass all object in the array to the command
-         */
-      }
-    },
-    execute_it: function (lerts, executed_cb) {
-      if (typeof lerts == 'array') return this.execute_for_array(lerts, executed_cb);
-      else if (typeof lerts == 'object') return this.execute_for_object(lerts, executed_cb);
-      else throw new Error('unkown type of lerts: ' + inspect(lerts));
-    },
-    execute: function (lert) {
       debug('executing external action against:', lert);
-      var self = this;
-      if (this.getEach()) {
-        async.forEachSeries(
-          alerts,
-          function (lert, cb) {
-            if (lert instanceof MongooseDocument) logger.debug('SINGLE lert is a mongodb Document');
 
-            logger.debug(self.getName() + ' running ' + self.getCommand());
-            debug(self.getName(), ' EA for:', lert);
-            debug('getOn: ', self.getOn()['0'].getName());
-            //logger.debug( "now would call " + self.getOn()[0].getName() + " if we had an rc of zero" );
+      var external_command = self.getExternalCmd();
+      var shell_env = lert.toShellEnv();
+      debug('Passing this in the ENV to command', shell_env);
+      external_command.setEnv(shell_env);
 
-            var external_command = self.getCmd();
-            var shell_env = lert.toShellEnv();
-            debug('Passing this in the ENV to command', shell_env);
-            external_command.setEnv(shell_env);
-            external_command.run(function (err, return_code) {
-              logger.debug('CMD-OUT: ' + external_command.getStdout());
-              logger.debug('CMD-ERR: ' + external_command.getStderr());
+      external_command.run(function (err, return_code) {
+        logger.debug('CMD-OUT: ' + external_command.getStdout());
+        logger.debug('CMD-ERR: ' + external_command.getStderr());
+        if (err) return cb && cb(err);
 
-              cb(err, return_code);
-            });
-          },
-          function (err) {
-            if (err) {
-              logger.error('EA failed: ' + err);
-            }
-          }
-        );
-      } else {
-        logger.debug('running all actions');
-        var lerts = alerts.map(function (l) {
-          return l.toShellEnv();
-        });
-        var external_command = self.getCmd();
-        external_command.setEnv(lerts);
-        external_command.run(function (err, return_code) {
-          logger.debug('Running all together returned: ' + inspect(arguments));
-          var on_handlers = self.getOn();
-          var on_handler_action = on_handlers[return_code] || on_handlers['default'];
-          debug('on handler:', on_handler_action);
-          on_handler_action.execute(
-            alerts.map(function (lert) {
-              return lert['_id'];
-            })
-          );
-        });
-      }
+        var on_handlers = self.getOn();
+        var on_handler_action = on_handlers[return_code] || on_handlers['default'];
+        debug('on handler:', on_handler_action);
+        on_handler_action.execute(lert, trig_query, cb);
+      });
     },
   },
 }));

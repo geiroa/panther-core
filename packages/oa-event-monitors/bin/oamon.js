@@ -4,7 +4,7 @@
  * This file is subject to the terms and conditions defined in the Software License Agreement.
  */
 
-OaMon = require('../common');
+const OaMon = require('../common');
 var oamon = new OaMon();
 
 // Logging

@@ -6,17 +6,16 @@
 
 var async = require('async');
 var opts = require('opts');
-mongoose = require('mongoose');
-User = require('../models/user');
+const mongoose = require('mongoose');
+const User = require('../models/user');
 var inspect = require('util').inspect;
-var async = require('async');
 
 var groupname = undefined;
 var username = undefined;
 var password = undefined;
 
-DEFAULT_HOSTNAME = 'localhost';
-DEFAULT_DATABASE = 'oa';
+const DEFAULT_HOSTNAME = 'localhost';
+const DEFAULT_DATABASE = 'oa';
 
 async.series(
   {

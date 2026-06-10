@@ -4,22 +4,23 @@
  * This file is subject to the terms and conditions defined in the Software License Agreement.
  */
 
-Preferences = require(__dirname + '/../models/preference');
+const Preferences = require(__dirname + '/../models/preference');
 var inspect = require('util').inspect;
 var bus = require('../lib/ipcbus').internal_bus;
 
 module.exports = {
   create: function (req, res, next) {
-    var q = { username: req.session.user };
+    var username = req.session.user.username;
+    var q = { username: username };
     var set_with = {
       $set: {
-        username: req.session.user,
+        username: username,
         delta_interval: req.body.delta_interval,
         chart_interval: req.body.chart_interval,
       },
     };
     Preferences.update(q, set_with, { upsert: true }, function (err) {
-      bus.emit('Preferences.' + req.session.user, {
+      bus.emit('Preferences.' + username, {
         delta_interval: req.body.delta_interval,
         chart_interval: req.body.chart_interval,
       });
@@ -28,7 +29,7 @@ module.exports = {
     });
   },
   index: function (req, res, next) {
-    Preferences.findOne({ username: req.session.user }, function (err, result) {
+    Preferences.findOne({ username: req.session.user.username }, function (err, result) {
       if (err) return res.send({ success: false });
       var response = { success: true };
       if (result == null) {

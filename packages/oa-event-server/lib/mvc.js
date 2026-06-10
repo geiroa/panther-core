@@ -4,6 +4,13 @@
  * This file is subject to the terms and conditions defined in the Software License Agreement.
  */
 
+// Dead code: this module is not required by anything in the runtime server.
+// Convention-based MVC bootstrap left over from an older Express setup;
+// modern routes live under app/route/. Body commented out 2026-04-27 — the
+// only consumer was test/unit/mvc_spec.ts. Delete entirely once we're sure
+// nothing on a release branch still references it.
+
+/*
 var logging = require('oa-logging')('oa:event:server:mvc');
 var logger = logging.logger;
 var debug = logging.debug;
@@ -155,3 +162,4 @@ function controllerAction(name, plural, action, fn) {
     fn.apply(this, arguments);
   };
 }
+*/

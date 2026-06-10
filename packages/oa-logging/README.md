@@ -23,7 +23,7 @@ E.G `oa:event:console:app:whatever` maps to `node-oa-event_console/app/whatever`
 
 If you set the ENV variable NODE_ENV to "test" all logger will be put to `warn`
 
-This is normally done in test/mocha_helpers.coffee
+This is normally done in test/mocha_helpers.ts
 
     process.env.NODE_ENV = 'test'
 

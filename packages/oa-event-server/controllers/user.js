@@ -4,7 +4,7 @@
  * This file is subject to the terms and conditions defined in the Software License Agreement.
  */
 
-Users = require(__dirname + '/../models/user');
+const Users = require(__dirname + '/../models/user');
 
 module.exports = {
   secure: function (req, res, next) {

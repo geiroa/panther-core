@@ -57,19 +57,20 @@ module.exports = {
 
   update: function (req, res, next) {
     var severity = req.params.id;
-    var query = { value: severity, system: false, owner: req.session.user };
+    var username = req.session.user.username;
+    var query = { value: severity, system: false, owner: username };
     var setwith = {
       $set: {
         value: req.body.value,
         label: req.body.label,
         foreground: req.body.foreground,
         background: req.body.background,
-        owner: req.session.user,
+        owner: username,
       },
     };
     Severity.update(query, setwith, { upsert: true }, function (err) {
       logger.debug('updated user severity ' + err);
-      bus.emit('Severity.' + req.session.user);
+      bus.emit('Severity.' + username);
       res.send({ success: !err });
     });
   },

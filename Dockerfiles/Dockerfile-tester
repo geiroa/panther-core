@@ -1,0 +1,34 @@
+FROM node:24.15.0-trixie-slim
+
+# CI test runner. Trixie is required because mongodb-memory-server downloads
+# the official MongoDB binaries (glibc-only) and Playwright's Chromium needs
+# the GTK/X11 stack below. Production images use the alpine-based
+# Dockerfile-builder + Dockerfile-runtime instead.
+
+ARG uid=500
+ARG gid=500
+
+ENV NODE_ENV=test
+
+RUN \
+  --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt,sharing=locked <<EOT
+    set -e
+    apt-get update
+    # Playwright system libraries for Chromium + Firefox on Debian trixie.
+    # Keeps `npx playwright install` (no --with-deps) runnable as non-root.
+    apt-get install -y --no-install-recommends ca-certificates git libcurl4 \
+      libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 \
+      libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
+      libgbm1 libpango-1.0-0 libcairo2 libasound2 libatspi2.0-0 \
+      libdbus-glib-1-2 libxtst6 libx11-xcb1 libxcursor1 libgtk-3-0
+    useradd -m -u ${uid} jenkins
+    groupmod -g ${gid} jenkins
+    npm install --ignore-scripts -g node-gyp
+EOT
+
+USER jenkins
+
+RUN git config --global user.email "jenkins@example.com" \
+ && git config --global user.name  "Jenkins CI"
+

@@ -9,7 +9,7 @@ var logging = require('oa-logging')('oa:event:server:controllers:ext_alert');
 var logger = logging.logger;
 var debug = logging.debug;
 
-Filters = require(__dirname + '/../models/filter');
+const Filters = require(__dirname + '/../models/filter');
 
 var util = require('util');
 var inspect = util.inspect;

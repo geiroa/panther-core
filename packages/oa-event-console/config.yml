@@ -62,7 +62,7 @@ http:
 
 # SMTP server used when sending emails
 smtp:
-  host: 'hlsmtppv71.openans.co.uk'
+  host: 'localhost'
   port: 25
 
 session:

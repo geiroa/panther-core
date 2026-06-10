@@ -1,7 +1,7 @@
 module.exports = {
   async up(db, client) {
     try {
-      await db.createCollection('rulematches', { strict: false });
+      await db.createCollection('rulematches', {});
     } catch (e) {
       if (e.codeName && e.codeName === 'NamespaceExists') {
         console.log('Collection [rulematches] already existed');

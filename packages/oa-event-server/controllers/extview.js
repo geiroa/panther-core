@@ -4,7 +4,7 @@
  * This file is subject to the terms and conditions defined in the Software License Agreement.
  */
 
-Views = require(__dirname + '/../models/layout');
+const Views = require(__dirname + '/../models/layout');
 var inspect = require('util').inspect;
 
 module.exports = {

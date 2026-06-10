@@ -105,8 +105,7 @@ block content
             table#views-table-default.table.table-nested
 
 block script
-  != js('bower/bootstrap3-typeahead')
-  != js('js/views')
+  != js('views')
 
   script(type="text/javascript" charset="utf-8").
     var fields_list  = !{JSON.stringify(fields_list)};

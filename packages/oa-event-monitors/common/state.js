@@ -5,7 +5,7 @@
  */
 
 // Logging
-var logging = require('oa-logging')('oa:event:monitors:commong:rawlog');
+var logging = require('oa-logging')('oa:event:monitors:common:state');
 var logger = logging.logger;
 var debug = logging.debug;
 
@@ -86,5 +86,4 @@ State.prototype.rules_reloaded = function (msg, cb) {
   return a;
 };
 
-// core becomes global
-probe_state = module.exports = new State();
+module.exports = new State();

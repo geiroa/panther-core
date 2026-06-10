@@ -1,7 +1,6 @@
-version: '3'
 services:
   mongodb:
-    image: mongo:3.6.23
+    image: mongo:7.0.28
     container_name: mongo
     hostname: mongodb
     restart: unless-stopped
@@ -9,9 +8,11 @@ services:
       - TZ=Europe/London
     expose:
       - '27017'
+    ports:
+      - '27017:27017'
 
   event-console:
-    image: openanswers/panther-console:4.1
+    image: openanswers/panther-console:5.0.4
     container_name: event-console
     hostname: console
     restart: unless-stopped
@@ -31,7 +32,7 @@ services:
       - rules-vol:/app/rules:rw
 
   event-server:
-    image: openanswers/panther-server:4.1
+    image: openanswers/panther-server:5.0.4
     container_name: event-server
     hostname: server
     restart: unless-stopped
@@ -45,7 +46,7 @@ services:
       - rules-vol:/app/rules:ro
 
   event-monitors-http:
-    image: openanswers/panther-monitors:4.1
+    image: openanswers/panther-monitors:5.0.4
     container_name: event-monitors-http
     hostname: event-monitors-http
     restart: unless-stopped
@@ -59,7 +60,7 @@ services:
       - rules-vol:/app/rules:ro
 
   event-monitors-syslogd:
-    image: openanswers/panther-monitors:4.1
+    image: openanswers/panther-monitors:5.0.4
     container_name: event-monitors-syslogd
     hostname: event-monitors-syslogd
     restart: unless-stopped
@@ -71,6 +72,14 @@ services:
       - event-server
     volumes:
       - rules-vol:/app/rules:ro
+
+  maildev:
+    image: maildev/maildev:2.1.0
+    restart: always
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
 
 volumes:
   rules-vol:

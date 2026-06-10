@@ -15,7 +15,7 @@ var EventEmitter = require('events').EventEmitter;
 var http = require('http');
 
 var Class = require('joose').Class;
-const {Server} = require('socket.io');
+const { Server } = require('socket.io');
 var lodashKeys = require('lodash/keys');
 let Joose = require('joose');
 let Promise = require('bluebird');
@@ -290,7 +290,7 @@ exports.MonitorServer = Class('MonitorServer', {
           if (promiseResults.alert) {
             let identifier = processed_event.get('identifier');
 
-            if (lodashGet(promiseResults, 'alert.nModified') == 0) {
+            if (lodashGet(promiseResults, 'alert.modifiedCount') == 0) {
               return cb(null, {
                 message: 'Saved new event: ' + identifier,
                 state: 'inserted',
@@ -368,7 +368,7 @@ exports.MonitorServer = Class('MonitorServer', {
         return logger.error('alerts not present');
       }
       evs.alerts.forEach(function (ev) {
-        self.insertevent(ev);
+        self.insertevent(ev, function () { /* per-event result discarded */ });
       });
       // Do some async cb stuff so we can return a cb with
       // all success or those failed

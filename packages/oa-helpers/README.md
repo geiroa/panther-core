@@ -27,7 +27,7 @@ V8 with an array containing more than 10 items :/
     
 ### `delay( timeout, cb )`
 
-coffeescript setTimeout( cb, timeout )
+setTimeout( cb, timeout ) with arguments swapped so the callback reads last.
 
 ### `map_object()`
 

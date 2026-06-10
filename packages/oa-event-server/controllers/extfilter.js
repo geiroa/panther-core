@@ -4,7 +4,7 @@
  * This file is subject to the terms and conditions defined in the Software License Agreement.
  */
 
-Filters = require(__dirname + '/../models/filter');
+const Filters = require(__dirname + '/../models/filter');
 var inspect = require('util').inspect;
 
 module.exports = {

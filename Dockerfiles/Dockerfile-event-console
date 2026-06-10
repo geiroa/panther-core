@@ -1,106 +1,41 @@
-FROM panther-builder:hydrogen-alpine3.18 as builder
-ARG BUILDTIME_ENV=production
+FROM panther-builder:24.15.0-alpine3.23 AS builder
 
-#RUN npm install -g yarn
 
-WORKDIR $BUILD_DIR
+FROM panther-runtime:24.15.0-alpine3.23 AS base
 
-COPY package.json $BUILD_DIR/package.json
-COPY yarn.lock $BUILD_DIR/yarn.lock
-
-COPY packages/oa-errors/package.json $BUILD_DIR/packages/oa-errors/package.json
-COPY packages/oa-helpers/package.json $BUILD_DIR/packages/oa-helpers/package.json
-COPY packages/oa-logging/package.json $BUILD_DIR/packages/oa-logging/package.json
-COPY packages/oa-tinycache/package.json $BUILD_DIR/packages/oa-tinycache/package.json
-
-COPY packages/oa-event-console/package.json $BUILD_DIR/packages/oa-event-console/package.json
-COPY packages/oa-event-rules/package.json $BUILD_DIR/packages/oa-event-rules/package.json
-
-COPY lerna.json $BUILD_DIR/lerna.json
-
-ENV CXXFLAGS="-march=nocona -mno-aes -mno-f16c -mno-avx -mno-avx2 -mno-bmi2"
-
-#RUN yarn install
-RUN ["/bin/bash", "-c", "yarn install"]
-
-COPY packages/oa-errors $BUILD_DIR/packages/oa-errors
-COPY packages/oa-helpers $BUILD_DIR/packages/oa-helpers
-COPY packages/oa-logging $BUILD_DIR/packages/oa-logging
-COPY packages/oa-tinycache $BUILD_DIR/packages/oa-tinycache
-
-COPY packages/oa-event-console $BUILD_DIR/packages/oa-event-console
-COPY packages/oa-event-rules $BUILD_DIR/packages/oa-event-rules
-
-ENV NODE_ENV=$BUILDTIME_ENV
-RUN yarn run lerna run install-deps
-RUN yarn run lerna run build
-
-# remove the devDeps
-RUN yarn install --production=true
-
-RUN find $BUILD_DIR/packages -type f -exec chmod ugo+r '{}' \; && \
-    find $BUILD_DIR/packages -type d -exec chmod ugo+rx '{}' \;
-
-FROM panther-runtime:hydrogen-alpine3.18
 LABEL component="panther/console"
 
 # required for using git to version control rules
-RUN apk --no-cache add git openssh-client
-
-COPY --from=builder /build/node_modules /app/node_modules
-
-COPY --from=builder /build/packages/oa-errors/lib /app/packages/oa-errors/lib
-COPY --from=builder /build/packages/oa-errors/package.json /app/packages/oa-errors/package.json
-COPY --from=builder /build/packages/oa-errors/node_modules /app/packages/oa-errors/node_modules
-
-COPY --from=builder /build/packages/oa-helpers/lib /app/packages/oa-helpers/lib
-COPY --from=builder /build/packages/oa-helpers/package.json /app/packages/oa-helpers/package.json
-COPY --from=builder /build/packages/oa-helpers/node_modules /app/packages/oa-helpers/node_modules
-
-COPY --from=builder /build/packages/oa-logging/lib /app/packages/oa-logging/lib
-COPY --from=builder /build/packages/oa-logging/node_modules /app/packages/oa-logging/node_modules
-COPY --from=builder /build/packages/oa-logging/package.json /app/packages/oa-logging/package.json
-
-COPY --from=builder /build/packages/oa-tinycache/lib /app/packages/oa-tinycache/lib
-COPY --from=builder /build/packages/oa-tinycache/node_modules /app/packages/oa-tinycache/node_modules
-COPY --from=builder /build/packages/oa-tinycache/package.json /app/packages/oa-tinycache/package.json
-
-COPY --from=builder /build/packages/oa-event-rules/lib /app/packages/oa-event-rules/lib
-COPY --from=builder /build/packages/oa-event-rules/node_modules /app/packages/oa-event-rules/node_modules
-COPY --from=builder /build/packages/oa-event-rules/package.json /app/packages/oa-event-rules/package.json
+RUN apk add --no-cache git openssh-client
 
 # Install application
-COPY --from=builder /build/packages/oa-event-console/dist/ /app/
-COPY --from=builder /build/packages/oa-event-console/node_modules/ /app/node_modules/
+# Mirror the dev layout under /app so runtime path resolution (Path.base = dist/lib/../..)
+# and `require('../../package.json')` from dist/lib work the same in Docker as locally.
+COPY --from=builder /build/packages/oa-event-console/dist ./dist
+COPY --from=builder /build/packages/oa-event-console/package.json ./package.json
+COPY --from=builder /build/packages/oa-event-console/public ./public
+COPY --from=builder /build/packages/oa-event-console/app/view ./app/view
+COPY --from=builder /build/packages/oa-event-console/app/emails ./app/emails
+COPY --from=builder /build/packages/oa-event-console/node_modules/ ./node_modules/
 
 # install rules files
-COPY --chown=app:app rules/server.rules.yml rules/http.rules.yml rules/syslogd.rules.yml /app/rules/
+COPY --from=builder --chown=app:app /build/rules/server.rules.yml /build/rules/http.rules.yml /build/rules/syslogd.rules.yml ./rules/
 
 # install the example Event Source config archives
-COPY --from=builder --chown=app:app /build/packages/oa-event-console/docker.files/private/ /app/private/
+COPY --from=builder --chown=app:app /build/packages/oa-event-console/docker/private/ ./private/
 
 # install config.yml
-COPY --from=builder /build/packages/oa-event-console/docker.files/config.yml /app/config.yml
+COPY --from=builder /build/packages/oa-event-console/docker/config.yml ./config.yml
 # install swagger definition
-COPY --from=builder /build/packages/oa-event-console/docker.files/swagger.json /app/swagger.json
-
-WORKDIR /app
-RUN find /app/rules -type f -exec chmod ugo+r '{}' \; && \
-    find /app/rules -type d -exec chmod ugo+rx '{}' \; && \
-    chmod ugo+rx /app/entrypoint.sh
-
-ARG BUILD_PANTHER_VERSION=
-ENV BUILD_PANTHER_VERSION=$BUILD_PANTHER_VERSION
-
-
-ARG RUNTIME_ENV=production
-ENV NODE_ENV=$RUNTIME_ENV
+COPY --from=builder /build/packages/oa-event-console/docker/swagger.json ./swagger.json
+# install entrypoint
+COPY --from=builder --chmod=0755 /build/packages/oa-event-console/docker/entrypoint.sh ./docker-entrypoint.sh
 
 EXPOSE 3001/tcp
 
-VOLUME /app/rules
-# cleanup
+VOLUME ./rules
+
 USER app
 
-ENTRYPOINT [ "sh", "/app/entrypoint.sh" ]
+ENTRYPOINT [ "./docker-entrypoint.sh" ]
 

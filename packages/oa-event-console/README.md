@@ -7,7 +7,7 @@ All rights reserved.
 
 ## Application Details
 
-The app uses [NodeJS](https://nodejs.org/), [Express4](https://expressjs.com/), [SocketIO](https://socket.io/), [MongoDB](https://www.mongodb.org/) and is written in Coffeescript.
+The app uses [NodeJS](https://nodejs.org/), [Express4](https://expressjs.com/), [SocketIO](https://socket.io/), [MongoDB](https://www.mongodb.org/) and is written in TypeScript.
 
 [Bluebird](https://bluebirdjs.com) promises ([A+](https://promisesaplus.com/)) are used for asynchronous tasks and error handling.
 
@@ -21,12 +21,12 @@ The app uses [NodeJS](https://nodejs.org/), [Express4](https://expressjs.com/), 
 
 ## Links
 
-- [Gitlab](https://gitlab.openans.co.uk/Panther/panther-core)
-- [Bugs](https://gitlab.openans.com/Panther/panther-core)
+- [GitHub](https://github.com/OpenAnswers/panther)
+- [Bugs](https://github.com/OpenAnswers/panther/issues)
 
 ## Layout
 
-`app/assets/js` - Coffeescript/JS for clients
+`app/assets/js` - TypeScript/JS for clients
 
 `app/assets/css` - Less for client css
 
@@ -48,6 +48,6 @@ The app uses [NodeJS](https://nodejs.org/), [Express4](https://expressjs.com/), 
 
 `test` - Mocha options and helpers
 
-`test/unit/*_spec.coffee` Unit tests.
+`test/unit/*_spec.ts` Unit tests.
 
-`test/func/*_spec.coffee` Functional tests.
+`test/func/*_spec.ts` Functional tests.

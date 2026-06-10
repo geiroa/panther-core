@@ -13,6 +13,7 @@ agent:
     0: 5
 
   field_map:
+    message: 'summary'
     whatever: 'whatever'
     fieldname_that_goes_lower: 'fieldname_that_goes_lower'
     fieldname_that_goes_upper: 'fieldname_that_goes_upper'
@@ -21,4 +22,4 @@ agent:
     fieldname_that_goes_lower: 'to_lower_case'
     fieldname_that_goes_upper: 'to_upper_case'
 
-  identifier: '{node}:{severity}:{summary}'
+  identifier: '{node}:{severity}:{tag}:{summary}'

@@ -6,12 +6,14 @@
 
 extends _template
 
+include ./mixin/buttons
+
 block nav
   - var nav_location = 'rules';
   include ./_nav_generic
 
 block css
-  != css('css/rules-management.css')
+  != css('rules_mgmt_css')
 
 block content
   #rules.rules.container
@@ -137,10 +139,7 @@ block content
 block template
   include ./rules-management/template-event-highlight
   include ./rules-management/template-rule-view
-  include ./rules-management/template-rule
-  include ./rules-management/template-selects
-  include ./rules-management/template-actions
-  include ./rules-management/template-options
+  include ./rules-management/template-includes
   script(id="template-new-rule-buttons" type="text/x-plain-template")
     //-a.btn.btn-primary.btn-create-rule Create Rule
     +button_word_yes('new-rule-create-btn','Create Rule').new-rule-create-btn(value='Create Rule')
@@ -148,8 +147,5 @@ block template
 
 
 block script
-  != js('bower/jquery-ui')
-  != js('bower/bootstrap3-typeahead')
-  != js('bower/bootstrap-validator')
-  != js('bower/highlightRegex')
-  != js('js/_rules-management.js')
+  script(src='/assets/vendor/jquery-ui.js' defer)
+  != js('rules_mgmt')
