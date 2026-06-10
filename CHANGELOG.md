@@ -1,3 +1,44 @@
+# Panther 5.0.4
+  ## Changes
+  - Source migrated from CoffeeScript to TypeScript across all packages
+  - Frontend build moved from Grunt + connect-assets + Bower to Vite 6 / esbuild
+  - Test stack moved to Mocha 11 + Chai 5 + Sinon 19; Playwright added for e2e,
+    Vitest for UI, c8 for coverage, mongodb-memory-server for integration
+  - Minimum Node raised from 16 to 24 (engines: ^24.0.0); Docker base images now
+    node 24.15.0 (alpine3.23 runtime/builder, trixie-slim tester)
+  - Workspace tooling moved from yarn/lerna bootstrap to npm workspaces; Lerna 7 → 9
+
+  ## NPM dependencies (production)
+  - express@5.0.1 (from 4.17)
+  - mongoose@6.13.6 (from 5.13.20)
+  - passport@0.7.0 (from 0.3.2)
+  - passport-local-mongoose@9.0.1 (from 5.0.1)
+  - passport.socketio@3.7.0 (from 3.6.1)
+  - nodemailer@8.0.5 (from 6.7.7)
+  - socket.io@4.7.5 (from 4.7.1)
+  - express-session@1.19.0 (from 1.17.3)
+  - body-parser@1.20.3
+  - glob@10.5.0 (from 7)
+  - less@4.2.1 (from 2.5)
+  - uuid@11 (replaces node-uuid; uuid 3 → 11)
+  - farmhash@5.0.1 (from 2.1)
+  - libxmljs2@0.37.0 (replaces libxmljs@1.0.11)
+  - @xmldom/xmldom@0.9.10 (from 0.7.7)
+  - tmp@0.2.5 (from 0.0.28)
+  - underscore@1.13.8, lodash@4.18.1, js-yaml@3.14.2
+  - Front-end libs now npm-managed (previously Bower): bootstrap, bootstrap-3-typeahead,
+    jquery, jquery-ui, d3, clipboard, file-saver, mustache, timeago, urijs
+  - Removed: connect-assets, coffeescript/coffee-script, node-uuid
+
+  ## NPM dependencies (dev/tooling)
+  - typescript@5.7.3, tsx, ts-node added; coffeescript/docco removed
+  - vite@6, vitest@4, @vitest/ui, esbuild
+  - @playwright/test@1.59, mongodb-memory-server@10, jsdom
+  - mocha@11 (from 9.2), chai@5 (from 3/4), sinon@19 (from 1.x)
+  - c8@11 coverage; prettier@3.6 + @trivago/prettier-plugin-sort-imports
+  - eslint@8.57, eslint-plugin-n (replaces eslint-plugin-node)
+  - Removed: grunt + grunt-*, bower, webdriverio, casperjs/phantomjs/selenium, jshint, coffeelint, request, benchmark, blanket
+
 # Panther 4.1.6
 
 - Additional logfile for capturing http-monitors event payload
